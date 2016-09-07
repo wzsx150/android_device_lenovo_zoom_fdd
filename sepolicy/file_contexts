@@ -1,0 +1,83 @@
+# Dev nodes
+#/dev/tspdrv                                                               u:object_r:tspdrv_device:s0
+#lenovo-sw jixj 2015.12.10 add
+#/dev/block/bootdevice/by-name/persist           u:object_r:persist_blk_device:s0
+
+# for Settings' access to VibratorHW
+/sys/class/timed_output/vibrator/enable                                   u:object_r:sysfs_vibrator:s0
+
+
+
+/data/tp/disable_keys    u:object_r:touchpanel_sysfs:s0
+
+
+# lenovo 
+
+
+
+#lenovo-sw weiweij added
+#/sys/devices/soc.0/78b8000.i2c/i2c-4/4-006b/power_supply/ext-charger(/.*)? 		u:object_r:sysfs_charger_supply:s0
+#lenovo-sw weiweij added end
+
+
+#lenovo-sw weiweij added for fast_charger_sw
+#/system/bin/fast_charger_sw u:object_r:fast_charger_sw_exec:s0
+#lenovo-sw weiweij added for fast_charger_sw end
+
+
+
+#lenovo-sw caoyi1 add for sensor calibration 20151222 end
+#/sys/devices/soc.0/78b6000.i2c/i2c-0/0-000e/fast_calibration_x u:object_r:sysfs_gs_cali_file:s0
+#/sys/devices/soc.0/78b6000.i2c/i2c-0/0-000e/fast_calibration_y u:object_r:sysfs_gs_cali_file:s0
+#/sys/devices/soc.0/78b6000.i2c/i2c-0/0-000e/fast_calibration_z u:object_r:sysfs_gs_cali_file:s0
+#/sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/cali_param_1 u:object_r:sysfs_ps_cali_file:s0
+#/sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/cali_param_2 u:object_r:sysfs_ps_cali_file:s0
+#lenovo-sw caoyi1 add for sensor calibration 20151222 end
+
+
+#lenovo-sw houdz1 add 20150318 begin
+#/sys/class/leds/button-backlight/brightness u:object_r:sysfs_leds_writable:s0
+#/sys/devices/soc.0/78b6000.i2c/i2c-0/0-006b/leds/test-led/brightness u:object_r:sysfs_leds_writable:s0
+#/sys/class/leds/rgbled/brightness u:object_r:sysfs_leds_writable:s0
+#/sys/class/leds/rgbled/trigger u:object_r:sysfs_leds_writable:s0
+#/sys/class/leds/rgbled/delay_on u:object_r:sysfs_leds_writable:s0
+#/sys/class/leds/rgbled/delay_off u:object_r:sysfs_leds_writable:s0
+#lenovo-sw houdz1 add 20150318 end
+
+# lenovo-sw zhangrc2 change NXP SmartPA mode begin
+#/dev/i2c_smartpa(/.*)?      u:object_r:audio_device:s0
+# lenovo-sw zhangrc2 change NXP SmartPA mode end
+#Brcm device, lumy1
+#/dev/bcm2079x		u:object_r:nfc_device:s0
+#lenovo-sw guoqiang3 20160304 start
+#/sys/devices/soc.0/leds-qpnp-ffffff[0-9a-z]*/leds/button-backlight/brightness u:object_r:led_sys:s0
+#/sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/enable u:object_r:sensor_sysfs:s0
+#/sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/cali_action u:object_r:sensor_sysfs:s0
+#/sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/raw_adc u:object_r:sensor_sysfs:s0
+#/sys/devices/virtual/input/input4/enable u:object_r:sensor_sysfs:s0
+#/sys/devices/virtual/input/input4/fast_calibration_x u:object_r:sensor_sysfs:s0
+#/sys/devices/virtual/input/input4/fast_calibration_y u:object_r:sensor_sysfs:s0
+#/sys/devices/virtual/input/input4/fast_calibration_z u:object_r:sensor_sysfs:s0
+#/sys/devices/virtual/input/input4/offset_x u:object_r:sensor_sysfs:s0
+#/sys/devices/virtual/input/input4/offset_y u:object_r:sensor_sysfs:s0
+#/sys/devices/virtual/input/input4/offset_z u:object_r:sensor_sysfs:s0
+#/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0020/input/input0/calibration u:object_r:touch_calibration_sysfs:s0
+#lenovo-sw guoqiang3 20160304 end
+#/sys/devices/soc.0/1b0c000.qcom,cci/48.qcom,actuator/offset u:object_r:laser_sysfs:s0
+#/sys/devices/soc.0/1b0c000.qcom,cci/48.qcom,actuator/crosstalk u:object_r:laser_sysfs:s0
+#line 1 "device/lenovo/common/sepolicy/themecenter/file_contexts"
+# Start IKUIPRC-38 PRCUICCR-6 Lenovo-sw caijh 2014.11.07 added,for lock screen Wallpaper file for other users's permission in unix stream rw through WallpaperManagerService
+# lock screen Wallpaper file for other users
+#/data/system/users/[0-9]+/lockScreenWallpaper                u:object_r:wallpaper_file:s0
+#/data/system/users/[0-9]+/lockScreenWallpaper.byte            u:object_r:wallpaper_file:s0
+# End IKUIPRC-38 PRCUICCR-6 Lenovo-sw caijh
+
+# Start IKUIPRC-38 PRCUICCR-6 Lenovo-sw caijh 2014.11.07 added,for theme file for other users's permission in unix stream rw through system_server
+# theme file for other users
+#/data/system/theme(/.*)?                                   u:object_r:theme_file:s0
+# End IKUIPRC-38 PRCUICCR-6 Lenovo-sw caijh
+
+
+#/dev/block/bootdevice/by-name/mrd      u:object_r:mrd_device:s0
+#/dev/block/platform/soc.0/f9824900.sdhci/by-name/mrd     u:object_r:mrd_device:s0
+
