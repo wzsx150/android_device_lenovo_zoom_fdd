@@ -24,6 +24,7 @@ app/TimeService/TimeService.apk
 
 # V4A
 lib/soundfx/libv4a_fx_ics.so
+lib/libV4AJniUtils.so
 vendor/etc/audio_effects.conf
 etc/audio_effects.conf
 
