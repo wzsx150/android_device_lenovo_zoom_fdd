@@ -127,7 +127,7 @@ BOARD_HARDWARE_CLASS += device/lenovo/zoom_fdd/cmhw
 TARGET_TAP_TO_WAKE_NODE := "/sys/devices/soc.0/78b9000.i2c/i2c-5/5-0020/input/input0/wake_gesture"
 
 # FM
-TARGET_QCOM_NO_FM_FIRMWARE := true
+#TARGET_QCOM_NO_FM_FIRMWARE := true
 #QCOM_FM_ENABLED := true
 
 # Fonts

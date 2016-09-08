@@ -186,18 +186,6 @@ PRODUCT_PACKAGES += \
     make_ext4fs \
     setup_fs
 
-# FM  use cm,  try last time
-PRODUCT_PACKAGES += \
-    FM2 \
-    libfmjni \
-    libqcomfm_jni \
-    qcom.fmradio
-
-
-#PRODUCT_BOOT_JARS += qcom.fmradio
-
-
-
 # Keystore  ---in lib not vendor 
 PRODUCT_PACKAGES += \
     keystore.msm8916

@@ -535,14 +535,6 @@ lib64/hw/lights.msm8916.so
 #lib64/hw/power.qcom.so
 #lib/hw/power.qcom.so
 
-# FM  --not sure , use cm ,try last time
-bin/fmconfig
-bin/fmfactorytest
-bin/fmfactorytestserver
-bin/fm_qsoc_patches
-
-
-
 
 
 # MMI 
@@ -564,8 +556,6 @@ vendor/lib/mmi_cpu.so
 vendor/lib64/mmi_cpu.so
 vendor/lib/mmi_flashlight.so
 vendor/lib64/mmi_flashlight.so
-vendor/lib/mmi_fm.so
-vendor/lib64/mmi_fm.so
 vendor/lib/mmi_gps.so
 vendor/lib64/mmi_gps.so
 vendor/lib/mmi_headset.so
@@ -604,7 +594,6 @@ vendor/lib64/mmi_wifi.so
 etc/init.qcom.audio.sh
 etc/hsic.control.bt.sh
 etc/init.qcom.bt.sh
-etc/init.qcom.fm.sh
 etc/init.qcom.post_boot.sh
 etc/init.qcom.wifi.sh
 etc/qca6234-service.sh
@@ -619,8 +608,9 @@ etc/init.qcom.coex.sh
 etc/init.crda.sh
 etc/init.ath3k.bt.sh
 etc/hcidump.sh
-
-#etc/bt_rf_test.sh   --not  use
+#   --not  use
+#etc/init.qcom.fm.sh
+#etc/bt_rf_test.sh
 
 # ims   ---may have some to volte
 vendor/lib64/lib-rcsimssjni.so
