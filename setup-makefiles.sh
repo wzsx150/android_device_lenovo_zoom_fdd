@@ -80,8 +80,7 @@ PRODUCT_PACKAGES += \\
 
 # not sure
 PRODUCT_PACKAGES += \\
-    CNEService \\
-    cneapiclient
+    CNEService
 
 
 PRODUCT_PACKAGES += \\
@@ -227,16 +226,6 @@ include \$(CLEAR_VARS)
 LOCAL_MODULE := qcmediaplayer
 LOCAL_MODULE_OWNER := $VENDOR
 LOCAL_SRC_FILES := proprietary/framework/qcmediaplayer.jar
-LOCAL_MODULE_TAGS := optional
-LOCAL_MODULE_SUFFIX := \$(COMMON_JAVA_PACKAGE_SUFFIX)
-LOCAL_MODULE_CLASS := JAVA_LIBRARIES
-LOCAL_CERTIFICATE := PRESIGNED
-include \$(BUILD_PREBUILT)
-
-include \$(CLEAR_VARS)
-LOCAL_MODULE := cneapiclient
-LOCAL_MODULE_OWNER := $VENDOR
-LOCAL_SRC_FILES := proprietary/framework/cneapiclient.jar
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE_SUFFIX := \$(COMMON_JAVA_PACKAGE_SUFFIX)
 LOCAL_MODULE_CLASS := JAVA_LIBRARIES

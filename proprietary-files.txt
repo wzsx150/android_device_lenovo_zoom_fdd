@@ -215,7 +215,7 @@ framework/com.qti.dpmframework.jar
 framework/com.quicinc.cne.jar
 framework/ConnectivityExt.jar
 framework/dpmapi.jar
-priv-app/CNEService/CNEService.apk
+#priv-app/CNEService/CNEService.apk
 #priv-app/CNEService/oat/arm64/CNEService.odex
 vendor/lib64/libcne.so
 vendor/lib64/libcneapiclient.so
@@ -252,7 +252,7 @@ vendor/lib/libWVStreamControlAPI_L3.so
 vendor/lib/mediadrm/libwvdrmengine.so
 
 # GPS
-priv-app/com.qualcomm.location/com.qualcomm.location.apk
+#priv-app/com.qualcomm.location/com.qualcomm.location.apk
 #priv-app/com.qualcomm.location/oat/arm64/com.qualcomm.location.odex
 etc/permissions/com.qualcomm.location.xml
 lib64/libloc_api_v02.so
@@ -386,7 +386,7 @@ vendor/lib/libSHIMDivxDrm.so
 # not sure -----use vendor
 lib64/libqcmediaplayer.so
 lib/libqcmediaplayer.so
-framework/qcmediaplayer.jar
+#framework/qcmediaplayer.jar
 
 
 
@@ -446,9 +446,9 @@ vendor/lib/libsmemlog.so
 
 
 # Radio
-priv-app/qcrilmsgtunnel/qcrilmsgtunnel.apk
+#priv-app/qcrilmsgtunnel/qcrilmsgtunnel.apk
 #priv-app/qcrilmsgtunnel/oat/arm64/qcrilmsgtunnel.odex
-app/shutdownlistener/shutdownlistener.apk
+#app/shutdownlistener/shutdownlistener.apk
 #app/shutdownlistener/oat/arm64/shutdownlistener.odex
 bin/netmgrd
 bin/qmuxd
@@ -457,10 +457,10 @@ bin/rfs_access
 bin/rmt_storage
 etc/permissions/qcnvitems.xml
 etc/permissions/qcrilhook.xml
-framework/qcnvitems.jar
+#framework/qcnvitems.jar
 #framework/oat/arm/qcnvitems.odex
 #framework/oat/arm64/qcnvitems.odex
-framework/qcrilhook.jar
+#framework/qcrilhook.jar
 #framework/oat/arm/qcrilhook.odex
 #framework/oat/arm64/qcrilhook.odex
 lib64/librmnetctl.so 
@@ -502,7 +502,7 @@ lib/hw/sensors.msm8916.so
 
 
 # Time services qcom
-app/TimeService/TimeService.apk
+#app/TimeService/TimeService.apk
 #app/TimeService/oat/arm64/TimeService.odex
 bin/time_daemon
 vendor/lib64/libtime_genoff.so
@@ -789,13 +789,6 @@ etc/vold.fstab
 
 
 
-# vendor other framework -----------------------------
-
-# not sure
-#framework/tcmiface.jar
-#framework/tcmclient.jar
-
-# vendor other framework end-----------------------------
 
 
 # vendor app -----------------------------
