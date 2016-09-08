@@ -319,12 +319,6 @@ LOCAL_MULTILIB := 64
 LOCAL_PROPRIETARY_MODULE := true
 include \$(BUILD_PREBUILT)
 
-# link ---into   android.mk
-#\$(shell mkdir -p \$(PRODUCT_OUT)/system/vendor/lib/egl && pushd \$(PRODUCT_OUT)/system/vendor/lib > /dev/null && ln -s egl/libEGL_adreno.so libEGL_adreno.so && popd > /dev/null)
-#\$(shell mkdir -p \$(PRODUCT_OUT)/system/vendor/lib64/egl && pushd \$(PRODUCT_OUT)/system/vendor/lib64 > /dev/null && ln -s egl/libEGL_adreno.so libEGL_adreno.so && popd > /dev/null)
-#\$(shell ln -s /system/lib/modules/pronto/pronto_wlan.ko \$(PRODUCT_OUT)/system/lib/modules/wlan.ko)
-#\$(shell ln -s /persist/WCNSS_qcom_wlan_nv.bin \$(PRODUCT_OUT)/system/etc/firmware/wlan/prima/WCNSS_qcom_wlan_nv.bin)
-
 
 endif
 endif
