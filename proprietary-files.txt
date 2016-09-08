@@ -790,7 +790,8 @@ etc/vold.fstab
 
 
 
-
+# not sure try.
+framework/tcmclient.jar
 
 # vendor app -----------------------------
 
