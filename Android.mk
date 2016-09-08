@@ -150,4 +150,11 @@ $(shell mkdir -p $(TARGET_OUT)/vendor/lib64; \
         ln -sf /system/vendor/lib64/egl/libEGL_adreno.so \
         $(TARGET_OUT)/vendor/lib64/libEGL_adreno.so)
 
+# wlan module
+$(shell mkdir -p $(TARGET_OUT)/lib/modules; \
+        rm $(TARGET_OUT)/lib/modules/wlan.ko; \
+        ln -sf /system/lib/modules/pronto/pronto_wlan.ko \
+        $(TARGET_OUT)/lib/modules/wlan.ko)
+
+
 endif
