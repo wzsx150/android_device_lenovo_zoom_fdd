@@ -22,5 +22,8 @@ vendor/lib64/libril-qc-qmi-1.so
 # Time services qcom
 #app/TimeService/TimeService.apk
 
-
+# V4A
+lib/soundfx/libv4a_fx_ics.so
+vendor/etc/audio_effects.conf
+etc/audio_effects.conf
 

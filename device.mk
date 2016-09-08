@@ -216,7 +216,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.qc.sdk.izat.premium_enabled=1 \
     ro.qc.sdk.izat.service_mask=0x5
 
-# Camera  ---use vendor camera ---add snap camera
+# Camera  ---use vendor camera
 #PRODUCT_PACKAGES += \
 #    Snap
 

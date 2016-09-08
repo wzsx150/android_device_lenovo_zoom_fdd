@@ -17,6 +17,8 @@ BOARD_VENDOR := lenovo
 
 LOCAL_PATH := device/lenovo/zoom_fdd
 
+PRODUCT_COPY_FILES := $(filter-out frameworks/av/media/libeffects/data/audio_effects.conf:system/etc/audio_effects.conf , $(PRODUCT_COPY_FILES))
+
 # Include path
 TARGET_SPECIFIC_HEADER_PATH := device/lenovo/zoom_fdd/include
 

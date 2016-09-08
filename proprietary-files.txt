@@ -27,12 +27,16 @@ lib/soundfx/libmaxxeffect-cembedded.so
 # not sure ,use cm ,try it
 #lib/soundfx/libldnhncr.so
 
-# must not ..  or lack some lib
-#vendor/bin/audioflacapp
+# must not ..  or lack some lib, try it
+vendor/bin/audioflacapp
 
-# use vendor, not sure
-#etc/audio_effects.conf
+# not sure
+bin/mm-audio-ftm
 
+# V4A
+lib/soundfx/libv4a_fx_ics.so
+vendor/etc/audio_effects.conf
+etc/audio_effects.conf
 
 
 
@@ -43,7 +47,7 @@ bin/hci_qcomm_init
 vendor/lib64/libbtnv.so
 
 # not sure
-#bin/ftmdaemon
+bin/ftmdaemon
 
 # Camera
 bin/mm-qcamera-daemon
