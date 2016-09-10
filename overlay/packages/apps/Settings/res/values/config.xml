@@ -21,7 +21,5 @@
     <bool name="config_msid_enable" translatable="false">true</bool>
     -->
     <!-- Carrier_enabled editable -->
-    <!--
     <bool name="config_allow_edit_carrier_enabled" translatable="false">true</bool>
-    -->
 </resources>
