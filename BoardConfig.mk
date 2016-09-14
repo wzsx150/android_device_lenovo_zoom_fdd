@@ -22,7 +22,7 @@ PRODUCT_COPY_FILES := $(filter-out frameworks/av/media/libeffects/data/audio_eff
 # Include path
 TARGET_SPECIFIC_HEADER_PATH := device/lenovo/zoom_fdd/include
 
-TARGET_OTA_ASSERT_DEVICE := zoom_fdd,zoom_tdd,zoom_row,z907,z903,z90a40,shot
+TARGET_OTA_ASSERT_DEVICE := zoom_fdd,zoom_tdd,zoom_row,z907,z903,z90a40,Z907,Z903,Z90a40,shot
 
 # Init
 #TARGET_INIT_VENDOR_LIB := libinit_msm8916
