@@ -16,14 +16,14 @@
 PRODUCT_RELEASE_NAME := zoom_fdd
 
 # Inherit some common CM stuff.
-$(call inherit-product, vendor/cm/config/common_full_phone.mk)
+$(call inherit-product, vendor/mk/config/common_full_phone.mk)
 
 # Inherit device configuration
 $(call inherit-product, device/lenovo/zoom_fdd/full_zoom_fdd.mk)
 
 ## Device identifier. This must come after all inclusions
 PRODUCT_DEVICE := zoom_fdd
-PRODUCT_NAME := cm_zoom_fdd
+PRODUCT_NAME := mk_zoom_fdd
 PRODUCT_BRAND := Lenovo
 PRODUCT_MODEL := Lenovo Z90-7
 PRODUCT_MANUFACTURER := LENOVO
