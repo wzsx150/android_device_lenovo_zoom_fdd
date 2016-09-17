@@ -242,13 +242,8 @@ on property:sys.boot_from_charger_mode=1
     trigger late-init
 
 # Load properties from /system/ + /factory after fs mount.
-on load_system_props_action
-    load_system_props
-
-on load_persist_props_action
-    load_persist_props
-    #start logd
-    #start logd-reinit
+on load_all_props_action
+    load_all_props
 
 # Indicate to fw loaders that the relevant mounts are up.
 on firmware_mounts_complete
@@ -259,22 +254,19 @@ on late-init
     trigger early-fs
     trigger fs
     trigger post-fs
+    trigger post-fs-data
 
     # Load properties from /system/ + /factory after fs mount. Place
     # this in another action so that the load will be scheduled after the prior
     # issued fs triggers have completed.
-    trigger load_system_props_action
-
-    # Now we can mount /data. File encryption requires keymaster to decrypt
-    # /data, which in turn can only be loaded when system properties are present
-    trigger post-fs-data
-    trigger load_persist_props_action
+    trigger load_all_props_action
 
     # Remove a file to wake up anything waiting for firmware.
     trigger firmware_mounts_complete
 
     trigger early-boot
     trigger boot
+
 
 on post-fs
     # once everything is setup, no need to modify /
@@ -312,10 +304,6 @@ on post-fs
 
     # create the lost+found directories, so as to enforce our permissions
     mkdir /cache/lost+found 0770 root root
-
-    chmod 0770 /system/bin/vfmService
-    chmod 0770 /system/bin/vfmExTest
-    chmod 0770 /system/bin/vfmAPITest
 
 on post-fs-data
     # We chown/chmod /data again so because mount is run as root + defaults
@@ -416,11 +404,7 @@ on post-fs-data
     # Set indication (checked by vold) that we have finished this action
     #setprop vold.post_fs_data_done 1
 
-    mkdir /data/validity 0770 system system
-
 on boot
-    #lenovo-sw 2015.09.02 liuyc7 add for adb online permission
-    setprop persist.sys.usb.factorymode true
     # basic network init
     ifup lo
     hostname localhost
@@ -428,9 +412,6 @@ on boot
 
     # set RLIMIT_NICE to allow priorities from 19 to -20
     setrlimit 13 40 40
-    
-    #insmod diagchar.ko for adb
-    insmod /system/lib/modules/diagchar.ko 
 
     # Memory management.  Basic kernel parameters, and allow the high
     # level system server to be able to adjust the kernel OOM driver
@@ -492,7 +473,6 @@ on boot
     chown system system /sys/class/timed_output/vibrator/enable
     chown system system /sys/class/leds/keyboard-backlight/brightness
     chown system system /sys/class/leds/lcd-backlight/brightness
-    chown system system /sys/class/leds/torch-light/brightness
     chown system system /sys/class/leds/button-backlight/brightness
     chown system system /sys/class/leds/jogball-backlight/brightness
     chown system system /sys/class/leds/red/brightness
@@ -634,11 +614,6 @@ on property:init.svc.sdcard=running
     wait /mnt/shell/emulated/0
     mount none /mnt/shell/emulated/0 /storage/sdcard0 bind
 
-#lenovo-sw liuyc7 2015.9.2 add for mount storage/sdcard0 begin 
-service installd /system/bin/installd
-    class main
-    socket installd stream 600 system system
-#lenovo-sw liuyc7 2015.9.2 add end 
 # testmode service
 service vold /system/bin/vold
     class core
@@ -652,15 +627,8 @@ service defaultcrypto /system/bin/vdc --wait cryptfs mountdefaultencrypted
     # vold will set vold.decrypt to trigger_restart_framework (default
     # encryption) or trigger_restart_min_framework (other encryption)
 
-
 service testmode /sbin/testmode
     class main
     oneshot
-
-service testmodelog /system/bin/testmodelog.sh
-  class main
-  disabled
-  oneshot
-on property:persist.sys.usb.testmodelog=true
-  start testmodelog  
+    seclabel u:r:testmode:s0
 

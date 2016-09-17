@@ -36,7 +36,7 @@ PRODUCT_GMS_CLIENTID_BASE := android-lenovo
 PRODUCT_BUILD_PROP_OVERRIDES += \
     TARGET_DEVICE=zoom_fdd \
     PRODUCT_NAME=zoom_fdd \
-    BUILD_FINGERPRINT="Lenovo/zoom_fdd/zoom_fdd:6.0.1/MMB29M/VIBEUI_V3.1_1625_5.396.1_ST_Z90-7:user/release-keys" \
-    PRIVATE_BUILD_DESC="zoom_fdd-user 6.0.1 MMB29M VIBEUI_V3.1_1625_5.396.1_ST_Z90-7 release-keys"
+    BUILD_FINGERPRINT="Lenovo/zoom_fdd/zoom_fdd:5.1.1/LMY47V/VIBEUI_V2.8_1550_5.175.1_ST_Z90-7:user/release-keys" \
+    PRIVATE_BUILD_DESC="zoom_fdd-user 5.1.1 LMY47V VIBEUI_V2.8_1550_5.175.1_ST_Z90-7 release-keys"
 
 TARGET_UNOFFICIAL_BUILD_ID := wzsx150

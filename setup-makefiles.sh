@@ -79,8 +79,8 @@ PRODUCT_PACKAGES += \\
 
 
 # not sure
-PRODUCT_PACKAGES += \\
-    CNEService
+#PRODUCT_PACKAGES += \\
+#    CNEService
 
 
 PRODUCT_PACKAGES += \\
@@ -89,6 +89,7 @@ PRODUCT_PACKAGES += \\
     qcmediaplayer
 
 PRODUCT_PACKAGES += \\
+    libqct_resampler \\
     libmm-abl
 
 PRODUCT_PACKAGES += \\
@@ -99,7 +100,6 @@ PRODUCT_PACKAGES += \\
     libtime_genoff
 
 #    libHevcSwDecoder \\ --use vender
-#    libqct_resampler \\ --use vender
 
 
 \$(call inherit-product, vendor/$VENDOR/$DEVICE/$DEVICE-vendor-blobs.mk)
@@ -168,16 +168,16 @@ LOCAL_PRIVILEGED_MODULE := true
 LOCAL_CERTIFICATE := platform
 include \$(BUILD_PREBUILT)
 
-include \$(CLEAR_VARS)
-LOCAL_MODULE := CNEService
-LOCAL_MODULE_OWNER := $VENDOR
-LOCAL_SRC_FILES := proprietary/priv-app/CNEService/CNEService.apk
-LOCAL_MODULE_TAGS := optional
-LOCAL_MODULE_SUFFIX := \$(COMMON_ANDROID_PACKAGE_SUFFIX)
-LOCAL_MODULE_CLASS := APPS
-LOCAL_PRIVILEGED_MODULE := true
-LOCAL_CERTIFICATE := platform
-include \$(BUILD_PREBUILT)
+#include \$(CLEAR_VARS)
+#LOCAL_MODULE := CNEService
+#LOCAL_MODULE_OWNER := $VENDOR
+#LOCAL_SRC_FILES := proprietary/priv-app/CNEService/CNEService.apk
+#LOCAL_MODULE_TAGS := optional
+#LOCAL_MODULE_SUFFIX := \$(COMMON_ANDROID_PACKAGE_SUFFIX)
+#LOCAL_MODULE_CLASS := APPS
+#LOCAL_PRIVILEGED_MODULE := true
+#LOCAL_CERTIFICATE := platform
+#include \$(BUILD_PREBUILT)
 
 
 include \$(CLEAR_VARS)

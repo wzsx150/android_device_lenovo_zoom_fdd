@@ -6,35 +6,119 @@
 
 import /init.environ.rc
 import /init.usb.rc
+import /init.qcom.usb.rc
 import /init.${ro.hardware}.rc
-import /init.usb.configfs.rc
 import /init.${ro.zygote}.rc
 import /init.trace.rc
 import /init.lenovo.rc
-# Include CM's extra init file
-import /init.cm.rc
-
 
 on early-init
     # Set init and its forked children's oom_adj.
     write /proc/1/oom_score_adj -1000
 
+    # Apply strict SELinux checking of PROT_EXEC on mmap/mprotect calls.
+    write /sys/fs/selinux/checkreqprot 0
+
+    # Set the security context for the init process.
+    # This should occur before anything else (e.g. ueventd) is started.
+    setcon u:r:init:s0
+
     # Set the security context of /adb_keys if present.
     restorecon /adb_keys
 
-    mount debugfs /sys/kernel/debug /sys/kernel/debug mode=755
-
     start ueventd
+
+    # create mountpoints
+    mkdir /mnt 0775 root system
 
 on init
     sysclktz 0
 
-    # Backward compatibility.
+    loglevel 3
+
+    # Backward compatibility
     symlink /system/etc /etc
     symlink /sys/kernel/debug /d
+    symlink /data/local /local
 
-    # Link /vendor to /system/vendor for devices without a vendor partition.
+    # Right now vendor lives on the same filesystem as system,
+    # but someday that may change.
     symlink /system/vendor /vendor
+
+# busybox tools
+    symlink /sbin/busybox /sbin/[
+    symlink /sbin/busybox /sbin/[[
+    symlink /sbin/busybox /sbin/ash
+    symlink /sbin/busybox /sbin/awk
+    symlink /sbin/busybox /sbin/basename
+    symlink /sbin/busybox /sbin/bunzip2
+    symlink /sbin/busybox /sbin/bzcat
+    symlink /sbin/busybox /sbin/bzip2
+    symlink /sbin/busybox /sbin/chgrp
+    symlink /sbin/busybox /sbin/clear
+    symlink /sbin/busybox /sbin/comm
+    symlink /sbin/busybox /sbin/cpio
+    symlink /sbin/busybox /sbin/cut
+    symlink /sbin/busybox /sbin/diff
+    symlink /sbin/busybox /sbin/dirname
+    symlink /sbin/busybox /sbin/dos2unix
+    symlink /sbin/busybox /sbin/df
+    symlink /sbin/busybox /sbin/du
+    symlink /sbin/busybox /sbin/echo
+    symlink /sbin/busybox /sbin/env
+    symlink /sbin/busybox /sbin/expr
+    symlink /sbin/busybox /sbin/false
+    symlink /sbin/busybox /sbin/find
+    symlink /sbin/busybox /sbin/free
+    symlink /sbin/busybox /sbin/fuser
+    symlink /sbin/busybox /sbin/getopt
+    symlink /sbin/busybox /sbin/gunzip
+    symlink /sbin/busybox /sbin/head
+    symlink /sbin/busybox /sbin/hexdump
+    symlink /sbin/busybox /sbin/killall
+    symlink /sbin/busybox /sbin/less
+    symlink /sbin/busybox /sbin/md5sum
+    symlink /sbin/busybox /sbin/mkfs.vfat
+    symlink /sbin/busybox /sbin/mknod
+    symlink /sbin/busybox /sbin/more
+    symlink /sbin/busybox /sbin/nice
+    symlink /sbin/busybox /sbin/pidof
+    symlink /sbin/busybox /sbin/pkill
+    symlink /sbin/busybox /sbin/printf
+    symlink /sbin/busybox /sbin/pwd
+    symlink /sbin/busybox /sbin/readlink
+    symlink /sbin/busybox /sbin/realpath
+    symlink /sbin/busybox /sbin/reset
+    symlink /sbin/busybox /sbin/sed
+    symlink /sbin/busybox /sbin/seq
+    symlink /sbin/busybox /sbin/sort
+    symlink /sbin/busybox /sbin/split
+    symlink /sbin/busybox /sbin/stat
+    symlink /sbin/busybox /sbin/strings
+    symlink /sbin/busybox /sbin/stty
+    symlink /sbin/busybox /sbin/sum
+    symlink /sbin/busybox /sbin/sysctl
+    symlink /sbin/busybox /sbin/tac
+    symlink /sbin/busybox /sbin/tail
+    symlink /sbin/busybox /sbin/tar
+    symlink /sbin/busybox /sbin/tee
+    symlink /sbin/busybox /sbin/test
+    symlink /sbin/busybox /sbin/time
+    symlink /sbin/busybox /sbin/timeout
+    symlink /sbin/busybox /sbin/tr
+    symlink /sbin/busybox /sbin/true
+    symlink /sbin/busybox /sbin/uname
+    symlink /sbin/busybox /sbin/uniq
+    symlink /sbin/busybox /sbin/unix2dos
+    symlink /sbin/busybox /sbin/unzip
+    symlink /sbin/busybox /sbin/usleep
+    symlink /sbin/busybox /sbin/vi
+    symlink /sbin/busybox /sbin/watch
+    symlink /sbin/busybox /sbin/wc
+    symlink /sbin/busybox /sbin/wget
+    symlink /sbin/busybox /sbin/which
+    symlink /sbin/busybox /sbin/xargs
+    symlink /sbin/busybox /sbin/zcat
 
     # Create cgroup mount point for cpu accounting
     mkdir /acct
@@ -53,41 +137,34 @@ on init
     write /sys/fs/cgroup/memory/sw/memory.move_charge_at_immigrate 1
     chown root system /sys/fs/cgroup/memory/sw/tasks
     chmod 0660 /sys/fs/cgroup/memory/sw/tasks
-    chmod 0220 /sys/fs/cgroup/memory/cgroup.event_control
 
     mkdir /system
     mkdir /data 0771 system system
     mkdir /cache 0770 system cache
     mkdir /config 0500 root root
 
-    # Mount staging areas for devices managed by vold
     # See storage config details at http://source.android.com/tech/storage/
-    mkdir /mnt 0755 root system
-    mount tmpfs tmpfs /mnt mode=0755,uid=0,gid=1000
-    restorecon_recursive /mnt
+    mkdir /mnt/shell 0700 shell shell
+    mkdir /mnt/media_rw 0700 media_rw media_rw
+    mkdir /storage 0751 root sdcard_r
 
+    # Directory for putting things only root should see.
     mkdir /mnt/secure 0700 root root
-    mkdir /mnt/secure/asec 0700 root root
-    mkdir /mnt/asec 0755 root system
-    mkdir /mnt/obb 0755 root system
-    mkdir /mnt/media_rw 0750 root media_rw
-    mkdir /mnt/user 0755 root root
-    mkdir /mnt/user/0 0755 root root
-    mkdir /mnt/expand 0771 system system
 
-    # Storage views to support runtime permissions
-    mkdir /storage 0755 root root
-    mkdir /mnt/runtime 0700 root root
-    mkdir /mnt/runtime/default 0755 root root
-    mkdir /mnt/runtime/default/self 0755 root root
-    mkdir /mnt/runtime/read 0755 root root
-    mkdir /mnt/runtime/read/self 0755 root root
-    mkdir /mnt/runtime/write 0755 root root
-    mkdir /mnt/runtime/write/self 0755 root root
+    # Directory for staging bindmounts
+    mkdir /mnt/secure/staging 0700 root root
 
-    # Symlink to keep legacy apps working in multi-user world
-    symlink /storage/self/primary /sdcard
-    symlink /mnt/user/0/primary /mnt/runtime/default/self/primary
+    # Directory-target for where the secure container
+    # imagefile directory will be bind-mounted
+    mkdir /mnt/secure/asec  0700 root root
+
+    # Secure container public mount points.
+    mkdir /mnt/asec  0700 root system
+    mount tmpfs tmpfs /mnt/asec mode=0755,gid=1000
+
+    # Filesystem image public mount points.
+    mkdir /mnt/obb 0700 root system
+    mount tmpfs tmpfs /mnt/obb mode=0755,gid=1000
 
     # memory control cgroup
     mkdir /dev/memcg 0700 root system
@@ -96,17 +173,10 @@ on init
     write /proc/sys/kernel/panic_on_oops 1
     write /proc/sys/kernel/hung_task_timeout_secs 0
     write /proc/cpu/alignment 4
-
-    # scheduler tunables
-    # Disable auto-scaling of scheduler tunables with hotplug. The tunables
-    # will vary across devices in unpredictable ways if allowed to scale with
-    # cpu cores.
-    write /proc/sys/kernel/sched_tunable_scaling 0
     write /proc/sys/kernel/sched_latency_ns 10000000
     write /proc/sys/kernel/sched_wakeup_granularity_ns 2000000
     write /proc/sys/kernel/sched_compat_yield 1
     write /proc/sys/kernel/sched_child_runs_first 0
-
     write /proc/sys/kernel/randomize_va_space 2
     write /proc/sys/kernel/kptr_restrict 2
     write /proc/sys/vm/mmap_min_addr 32768
@@ -121,10 +191,6 @@ on init
 
     # set fwmark on accepted sockets
     write /proc/sys/net/ipv4/tcp_fwmark_accept 1
-
-    # disable icmp redirects
-    write /proc/sys/net/ipv4/conf/all/accept_redirects 0
-    write /proc/sys/net/ipv6/conf/all/accept_redirects 0
 
     # Create cgroup mount points for process groups
     mkdir /dev/cpuctl
@@ -144,50 +210,6 @@ on init
     write /dev/cpuctl/bg_non_interactive/cpu.rt_runtime_us 700000
     write /dev/cpuctl/bg_non_interactive/cpu.rt_period_us 1000000
 
-    # sets up initial cpusets for ActivityManager
-    mkdir /dev/cpuset
-    mount cpuset none /dev/cpuset
-
-    # this ensures that the cpusets are present and usable, but the device's
-    # init.rc must actually set the correct cpus
-    mkdir /dev/cpuset/foreground
-    write /dev/cpuset/foreground/cpus 0
-    write /dev/cpuset/foreground/mems 0
-    mkdir /dev/cpuset/foreground/boost
-    write /dev/cpuset/foreground/boost/cpus 0
-    write /dev/cpuset/foreground/boost/mems 0
-    mkdir /dev/cpuset/background
-    write /dev/cpuset/background/cpus 0
-    write /dev/cpuset/background/mems 0
-
-    # system-background is for system tasks that should only run on
-    # little cores, not on bigs
-    # to be used only by init, so don't change system-bg permissions
-    mkdir /dev/cpuset/system-background
-    write /dev/cpuset/system-background/cpus 0
-    write /dev/cpuset/system-background/mems 0
-
-    # change permissions for all cpusets we'll touch at runtime
-    chown system system /dev/cpuset
-    chown system system /dev/cpuset/foreground
-    chown system system /dev/cpuset/foreground/boost
-    chown system system /dev/cpuset/background
-    chown system system /dev/cpuset/system-background
-    chown system system /dev/cpuset/tasks
-    chown system system /dev/cpuset/foreground/tasks
-    chown system system /dev/cpuset/foreground/boost/tasks
-    chown system system /dev/cpuset/background/tasks
-    chown system system /dev/cpuset/system-background/tasks
-
-    # set system-background to 0775 so SurfaceFlinger can touch it
-    chmod 0775 /dev/cpuset/system-background
-    chmod 0664 /dev/cpuset/foreground/tasks
-    chmod 0664 /dev/cpuset/foreground/boost/tasks
-    chmod 0664 /dev/cpuset/background/tasks
-    chmod 0664 /dev/cpuset/system-background/tasks
-    chmod 0664 /dev/cpuset/tasks
-
-
     # qtaguid will limit access to specific data based on group memberships.
     #   net_bw_acct grants impersonation of socket owners.
     #   net_bw_stats grants access to other apps' detailed tagged-socket stats.
@@ -206,11 +228,6 @@ on init
     mount pstore pstore /sys/fs/pstore
     chown system log /sys/fs/pstore/console-ramoops
     chmod 0440 /sys/fs/pstore/console-ramoops
-    chown system log /sys/fs/pstore/pmsg-ramoops-0
-    chmod 0440 /sys/fs/pstore/pmsg-ramoops-0
-
-    # enable armv8_deprecated instruction hooks
-    write /proc/sys/abi/swp 1
 
 # Healthd can trigger a full boot from charger mode by signaling this
 # property when the power button is held.
@@ -219,13 +236,8 @@ on property:sys.boot_from_charger_mode=1
     trigger late-init
 
 # Load properties from /system/ + /factory after fs mount.
-on load_system_props_action
-    load_system_props
-
-on load_persist_props_action
-    load_persist_props
-    start logd
-    start logd-reinit
+on load_all_props_action
+    load_all_props
 
 # Indicate to fw loaders that the relevant mounts are up.
 on firmware_mounts_complete
@@ -236,16 +248,12 @@ on late-init
     trigger early-fs
     trigger fs
     trigger post-fs
+    trigger post-fs-data
 
     # Load properties from /system/ + /factory after fs mount. Place
     # this in another action so that the load will be scheduled after the prior
     # issued fs triggers have completed.
-    trigger load_system_props_action
-
-    # Now we can mount /data. File encryption requires keymaster to decrypt
-    # /data, which in turn can only be loaded when system properties are present
-    trigger post-fs-data
-    trigger load_persist_props_action
+    trigger load_all_props_action
 
     # Remove a file to wake up anything waiting for firmware.
     trigger firmware_mounts_complete
@@ -255,13 +263,10 @@ on late-init
 
 
 on post-fs
-    start logd
     # once everything is setup, no need to modify /
     mount rootfs rootfs / ro remount
-    # Mount shared so changes propagate into child namespaces
+    # mount shared so changes propagate into child namespaces
     mount rootfs rootfs / shared rec
-    # Mount default storage into root namespace
-    mount none /mnt/runtime/default /storage slave bind rec
 
     # We chown/chmod /cache again so because mount is run as root + defaults
     chown system cache /cache
@@ -269,9 +274,9 @@ on post-fs
     # We restorecon /cache in case the cache partition has been reset.
     restorecon_recursive /cache
 
-    # Create /cache/recovery in case it's not there. It'll also fix the odd
-    # permissions if created by the recovery system.
-    mkdir /cache/recovery 0770 system cache
+    # This may have been created by the recovery system with odd permissions
+    chown system cache /cache/recovery
+    chmod 0770 /cache/recovery
 
     #change permissions on vmallocinfo so we can grab it from bugreports
     chown root log /proc/vmallocinfo
@@ -294,13 +299,6 @@ on post-fs
     # create the lost+found directories, so as to enforce our permissions
     mkdir /cache/lost+found 0770 root root
 
-#lenovo-sw weiweij added
-	chown system system /sys/class/power_supply/ext-charger/fast_charger_is_engineermode
-	chown system system /sys/class/power_supply/ext-charger/otg_usb_short
-    chmod 0664 /sys/class/power_supply/ext-charger/fast_charger_is_engineermode
-    chmod 0666 /sys/class/power_supply/ext-charger/otg_usb_short
-#lenovo-sw weiweij end
-
 on post-fs-data
     # We chown/chmod /data again so because mount is run as root + defaults
     chown system system /data
@@ -308,32 +306,31 @@ on post-fs-data
     # We restorecon /data in case the userdata partition has been reset.
     restorecon /data
 
-    # Emulated internal storage area
-    mkdir /data/media 0770 media_rw media_rw
-
-    # Make sure we have the device encryption key
-    start logd
-    start vold
-    installkey /data
-
-    # Start bootcharting as soon as possible after the data partition is
-    # mounted to collect more data.
-    mkdir /data/bootchart 0755 shell shell
-    bootchart_init
-
     # Avoid predictable entropy pool. Carry over entropy from previous boot.
     copy /data/system/entropy.dat /dev/urandom
+
+    # Create dump dir and collect dumps.
+    # Do this before we mount cache so eventually we can use cache for
+    # storing dumps on platforms which do not have a dedicated dump partition.
+    mkdir /data/dontpanic 0750 root log
+
+    # Collect apanic data, free resources and re-arm trigger
+    copy /proc/apanic_console /data/dontpanic/apanic_console
+    chown root log /data/dontpanic/apanic_console
+    chmod 0640 /data/dontpanic/apanic_console
+
+    copy /proc/apanic_threads /data/dontpanic/apanic_threads
+    chown root log /data/dontpanic/apanic_threads
+    chmod 0640 /data/dontpanic/apanic_threads
+
+    write /proc/apanic_console 1
 
     # create basic filesystem structure
     mkdir /data/misc 01771 system misc
     mkdir /data/misc/adb 02750 system shell
-    mkdir /data/misc/bluedroid 02770 bluetooth net_bt_stack
-    # Fix the access permissions and group ownership for 'bt_config.conf'
-    chmod 0660 /data/misc/bluedroid/bt_config.conf
-    chown bluetooth net_bt_stack /data/misc/bluedroid/bt_config.conf
+    mkdir /data/misc/bluedroid 0770 bluetooth net_bt_stack
     mkdir /data/misc/bluetooth 0770 system system
     mkdir /data/misc/keystore 0700 keystore keystore
-    mkdir /data/misc/gatekeeper 0700 system system
     mkdir /data/misc/keychain 0771 system system
     mkdir /data/misc/net 0750 root shell
     mkdir /data/misc/radio 0770 system radio
@@ -348,12 +345,10 @@ on post-fs-data
     mkdir /data/misc/ethernet 0770 system system
     mkdir /data/misc/dhcp 0770 dhcp dhcp
     mkdir /data/misc/user 0771 root root
-    mkdir /data/misc/perfprofd 0775 root root
     # give system access to wpa_supplicant.conf for backup and restore
     chmod 0660 /data/misc/wifi/wpa_supplicant.conf
     mkdir /data/local 0751 root root
     mkdir /data/misc/media 0700 media media
-    mkdir /data/misc/vold 0700 root root
 
     # For security reasons, /data/local/tmp should always be empty.
     # Do not place files or directories in /data/local/tmp
@@ -364,7 +359,11 @@ on post-fs-data
     mkdir /data/app-lib 0771 system system
     mkdir /data/app 0771 system system
     mkdir /data/property 0700 root root
-    mkdir /data/tombstones 0771 system system
+
+    # add APlog dir
+    mkdir /data/local/log 0771 system system
+    mkdir /data/local/log/aplog 0777 system system
+    mkdir /data/local/log/aplog/bluetooth 0777 bluetooth net_bt_stack
 
     # create dalvik-cache, so as to enforce our permissions
     mkdir /data/dalvik-cache 0771 root root
@@ -394,28 +393,11 @@ on post-fs-data
     # Separate location for storing security policy files on data
     mkdir /data/security 0711 system system
 
-    # Create all remaining /data root dirs so that they are made through init
-    # and get proper encryption policy installed
-    mkdir /data/backup 0700 system system
-    mkdir /data/media 0770 media_rw media_rw
-    mkdir /data/ss 0700 system system
-    mkdir /data/system 0775 system system
-    mkdir /data/system/heapdump 0700 system system
-    mkdir /data/user 0711 system system
-
-    setusercryptopolicies /data/user
-
     # Reload policy from /data/security if present.
     setprop selinux.reload_policy 1
 
     # Set SELinux security contexts on upgrade or policy update.
     restorecon_recursive /data
-    restorecon /data/data
-    restorecon /data/user
-    restorecon /data/user/0
-
-    # Check any timezone data in /data is newer than the copy in /system, delete if not.
-    exec - system system -- /system/bin/tzdatacheck /system/usr/share/zoneinfo /data/misc/zoneinfo
 
     # If there is no fs-post-data action in the init.<device>.rc file, you
     # must uncomment this line, otherwise encrypted filesystems
@@ -438,9 +420,9 @@ on boot
     write /proc/sys/vm/overcommit_memory 1
     write /proc/sys/vm/min_free_order_shift 4
     chown root system /sys/module/lowmemorykiller/parameters/adj
-    chmod 0664 /sys/module/lowmemorykiller/parameters/adj
+    chmod 0220 /sys/module/lowmemorykiller/parameters/adj
     chown root system /sys/module/lowmemorykiller/parameters/minfree
-    chmod 0664 /sys/module/lowmemorykiller/parameters/minfree
+    chmod 0220 /sys/module/lowmemorykiller/parameters/minfree
 
     # Tweak background writeout
     write /proc/sys/vm/dirty_expire_centisecs 200
@@ -484,28 +466,26 @@ on boot
     chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/boostpulse_duration
     chown system system /sys/devices/system/cpu/cpufreq/interactive/io_is_busy
     chmod 0660 /sys/devices/system/cpu/cpufreq/interactive/io_is_busy
+    chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+    chmod 0660 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
 
     # Assume SMP uses shared cpufreq policy for all CPUs
     chown system system /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
     chmod 0660 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
-
+    #camera key status
+    chown system system /sys/devices/soc.0/gpio_keys.68/camera_key
+    
     chown system system /sys/class/timed_output/vibrator/enable
-#add by lixh10 for vibrator intensity control 2015-3-16 start  
-    chown system system /sys/class/timed_output/vibrator/pwm_duty_ns 
-#add by lixh10 for vibrator intensity control 2015-3-16 end 
     chown system system /sys/class/leds/keyboard-backlight/brightness
     chown system system /sys/class/leds/lcd-backlight/brightness
+   # chown system system /sys/class/leds/torch-light/brightness
     chown system system /sys/class/leds/button-backlight/brightness
-#add by liuyh9 for led blink
     chown system system /sys/class/leds/button-backlight/blink
-#add by liuyh9 for led blink
+    chown system system /sys/class/leds/chg_led/brightness
     chown system system /sys/class/leds/jogball-backlight/brightness
     chown system system /sys/class/leds/red/brightness
-    chown system system /sys/class/leds/red/blink
     chown system system /sys/class/leds/green/brightness
-    chown system system /sys/class/leds/green/blink
     chown system system /sys/class/leds/blue/brightness
-    chown system system /sys/class/leds/blue/blink
     chown system system /sys/class/leds/red/device/grpfreq
     chown system system /sys/class/leds/red/device/grppwm
     chown system system /sys/class/leds/red/device/blink
@@ -518,93 +498,53 @@ on boot
     chown system system /sys/kernel/ipv4/tcp_rmem_def
     chown system system /sys/kernel/ipv4/tcp_rmem_max
     chown root radio /proc/cmdline
-#begin lenovo add by wengjun1@lenovo.com
-	chown system system /sys/board_properties/tpd_suspend_status
-    chown system system /sys/board_properties/tpd_glove_status
-#end lenovo add by wengjun1@lenovo.com
-#begin lenovo add by houdz1@lenovo.com
-	chmod 0664 /sys/class/leds/button-backlight/brightness
-	chown system system /sys/class/leds/button-backlight/brightness
-	chmod 0664 /sys/class/leds/test-led/brightness
-	chown system system /sys/class/leds/test-led/brightness
-	chmod 0664 /sys/class/leds/rgbled/brightness
-	chown system system /sys/class/leds/rgbled/brightness
-	chmod 0664 /sys/class/leds/rgbled/trigger
-	chown system system /sys/class/leds/rgbled/trigger
-	chmod 0664 /sys/bus/i2c/devices/6-0036/dimming_step_time
-	chown system system /sys/bus/i2c/devices/6-0036/dimming_step_time
-	restorecon /sys/class/leds/button-backlight/brightness
-	restorecon /sys/class/leds/test-led/brightness
-        restorecon /sys/class/leds/rgbled/brightness
-#end lenovo add by houdz1@lenovo.com
+   # lenovo huangsh4 share torch-light to uplayer begin
+    chmod 0664 /sys/class/leds/torch-light/brightness
+    chown system system /sys/class/leds/torch-light/brightness
+    restorecon /sys/class/leds/torch-light/brightness
+   # lenovo huangsh4 share torch-light to uplayer end
 
-#Begin hujian2 20160303 add write permission for reset modem
-    chmod 0666  /sys/bus/msm_subsys/devices/subsys2/restart_level
-    chmod 0666  /d/msm_subsys/modem
-#End hujian2 20160303 add write permission for reset modem
+    #chown of cabc_onoff node for factorymode control
+    chown system system /sys/devices/virtual/graphics/fb0/cabc_onoff
+    chmod 0660 /sys/devices/virtual/graphics/fb0/cabc_onoff
 
-#lenovo-sw caoyi1 add for sensor calibration 20151222 begin
-	chmod 0664 /sys/class/input/input4/fast_calibration_x
-	chown system system /sys/class/input/input4/fast_calibration_x
-	chmod 0664 /sys/class/input/input4/fast_calibration_y
-	chown system system /sys/class/input/input4/fast_calibration_y
-	chmod 0664 /sys/class/input/input4/fast_calibration_z
-	chown system system /sys/class/input/input4/fast_calibration_z
-	restorecon /sys/class/input/input4/fast_calibration_x
-	restorecon /sys/class/input/input4/fast_calibration_y
-	restorecon /sys/class/input/input4/fast_calibration_z
-	chmod 0664 /sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/cali_param_1
-	chown system system /sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/cali_param_1
-	chmod 0664 /sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/cali_param_2
-	chown system system /sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/cali_param_2
-	restorecon /sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/cali_param_1
-	restorecon /sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/cali_param_2
-	chmod 0664 /persist/gsensor_cali_val_x
-	chown system system /persist/gsensor_cali_val_x
-	chmod 0664 /persist/gsensor_cali_val_y
-	chown system system /persist/gsensor_cali_val_y
-	chmod 0664 /persist/gsensor_cali_val_z
-	chown system system /persist/gsensor_cali_val_z
-	restorecon /persist/gsensor_cali_val_x
-	restorecon /persist/gsensor_cali_val_y
-	restorecon /persist/gsensor_cali_val_z
-	chmod 0664 /persist/cali_param_1
-	chown system system /persist/cali_param_1
-	chmod 0664 /persist/cali_param_2
-	chown system system /persist/cali_param_2
-	restorecon /persist/cali_param_1
-	restorecon /persist/cali_param_2
-#lenovo-sw caoyi1 add for sensor calibration 20151222 end
+    #lenovo zhangsx10 add begin
+    chown system system /sys/class/power_supply/ac/charge_control_limit
+    chmod 0664  /sys/class/power_supply/ac/charge_control_limit
+    #lenovo zhangsx10 add end
+
+    chown system system /persist/alps_calib.dat
+    chmod 0664 /persist/alps_calib.dat
     chown system system /persist/akmd_set.txt
     chmod 0664 /persist/akmd_set.txt
-    restorecon /persist/akmd_set.txt
     chown system input /sys/class/compass/akm09911/raw_xyz
-    chmod 0664 /sys/class/compass/akm09911/raw_xyz
-    restorecon /sys/class/compass/akm09911/raw_xyz
+    chmod 0644 /sys/class/compass/akm09911/raw_xyz
     chown system input /sys/class/compass/akm09911/self_test
-    chmod 0664 /sys/class/compass/akm09911/self_test
-    restorecon /sys/class/compass/akm09911/self_test
-    chown system input /sys/class/input/input4/enable
-    chmod 0664 /sys/class/input/input4/enable
-	chmod 0664 /sys/class/input/input4/offset_x
-	chown system system /sys/class/input/input4/offset_x
-	chmod 0664 /sys/class/input/input4/offset_y
-	chown system system /sys/class/input/input4/offset_y
-	chmod 0664 /sys/class/input/input4/offset_z
-	chown system system /sys/class/input/input4/offset_z
-	restorecon /sys/class/input/input4/enable
-	restorecon /sys/class/input/input4/offset_x
-	restorecon /sys/class/input/input4/offset_y
-	restorecon /sys/class/input/input4/offset_z
-	chmod 0664 /sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/enable
-	chown system system /sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/enable
-	chmod 0664 /sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/cali_action
-	chown system system /sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/cali_action
-	chmod 0664 /sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/raw_adc
-	chown system system /sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/raw_adc
-	restorecon /sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/enable
-	restorecon /sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/cali_action
-	restorecon /sys/devices/soc.0/78b6000.i2c/i2c-0/0-0023/raw_adc
+    chmod 0644 /sys/class/compass/akm09911/self_test
+    chown system input /sys/class/input/input3/enable
+    chmod 0644 /sys/class/input/input3/enable
+    chown system input /sys/class/input/input3/fast_calibration_x
+    chmod 0644 /sys/class/input/input3/fast_calibration_x
+    chown system input /sys/class/input/input3/fast_calibration_y
+    chmod 0644 /sys/class/input/input3/fast_calibration_y
+    chown system input /sys/class/input/input3/fast_calibration_z
+    chmod 0644 /sys/class/input/input3/fast_calibration_z
+    chown system input /sys/class/input/input3/offset_x
+    chmod 0644 /sys/class/input/input3/offset_x
+    chown system input /sys/class/input/input3/offset_y
+    chmod 0644 /sys/class/input/input3/offset_y
+    chown system input /sys/class/input/input3/offset_z
+    chmod 0644 /sys/class/input/input3/offset_z
+    chown system input /sys/class/input/input5/device/enable
+    chmod 0644 /sys/class/input/input5/device/enable
+    chown system input /sys/class/input/input5/device/cali_action
+    chmod 0644 /sys/class/input/input5/device/cali_action
+    chown system input /sys/class/input/input5/device/cali_param_1
+    chmod 0644 /sys/class/input/input5/device/cali_param_1
+    chown system input /sys/class/input/input5/device/cali_param_2
+    chmod 0644 /sys/class/input/input5/device/cali_param_2
+    chown system input /sys/class/input/input5/device/raw_adc
+    chmod 0644 /sys/class/input/input5/device/raw_adc
 
     # Define default initial receive window size in segments.
     setprop net.tcp.default_init_rwnd 60
@@ -621,6 +561,8 @@ on property:vold.decrypt=trigger_default_encryption
 on property:vold.decrypt=trigger_encryption
     start surfaceflinger
     start encrypt
+on property:vold.decrypt=myreencrypt
+    start myreencrypto
 
 on property:sys.init_log_level=*
     loglevel ${sys.init_log_level}
@@ -633,8 +575,6 @@ on property:vold.decrypt=trigger_reset_main
 
 on property:vold.decrypt=trigger_load_persist_props
     load_persist_props
-    start logd
-    start logd-reinit
 
 on property:vold.decrypt=trigger_post_fs_data
     trigger post-fs-data
@@ -663,21 +603,6 @@ on property:sys.sysctl.extra_free_kbytes=*
 on property:sys.sysctl.tcp_def_init_rwnd=*
     write /proc/sys/net/ipv4/tcp_default_init_rwnd ${sys.sysctl.tcp_def_init_rwnd}
 
-on property:security.perf_harden=0
-    write /proc/sys/kernel/perf_event_paranoid 1
-
-on property:security.perf_harden=1
-    write /proc/sys/kernel/perf_event_paranoid 3
-
-#lenovo houdz1 begin
-on property:sys.led.timer=timer
-    chmod 0664 /sys/class/leds/rgbled/delay_off
-    chown system system /sys/class/leds/rgbled/delay_off
-    chmod 0664 /sys/class/leds/rgbled/delay_on
-    chown system system /sys/class/leds/rgbled/delay_on
-    restorecon /sys/class/leds/rgbled/delay_off
-    restorecon /sys/class/leds/rgbled/delay_on
-#lenovo houdz1 end
 
 ## Daemon processes to be run by init.
 ##
@@ -691,19 +616,12 @@ service logd /system/bin/logd
     socket logd stream 0666 logd logd
     socket logdr seqpacket 0666 logd logd
     socket logdw dgram 0222 logd logd
-    group root system
-     writepid /dev/cpuset/system-background/tasks
-
-service logd-reinit /system/bin/logd --reinit
-    oneshot
-    writepid /dev/cpuset/system-background/tasks
-    disabled
+    seclabel u:r:logd:s0
 
 service healthd /sbin/healthd
     class core
     critical
     seclabel u:r:healthd:s0
-    group root system
 
 service console /system/bin/sh
     class core
@@ -731,7 +649,6 @@ service lmkd /system/bin/lmkd
     class core
     critical
     socket lmkd seqpacket 0660 system system
-    writepid /dev/cpuset/system-background/tasks
 
 service servicemanager /system/bin/servicemanager
     class core
@@ -744,12 +661,9 @@ service servicemanager /system/bin/servicemanager
     onrestart restart surfaceflinger
     onrestart restart drm
 
-service vold /system/bin/vold \
-        --blkid_context=u:r:blkid:s0 --blkid_untrusted_context=u:r:blkid_untrusted:s0 \
-        --fsck_context=u:r:fsck:s0 --fsck_untrusted_context=u:r:fsck_untrusted:s0
+service vold /system/bin/vold
     class core
     socket vold stream 0660 root mount
-    socket cryptd stream 0660 root mount
     ioprio be 2
 
 service netd /system/bin/netd
@@ -761,16 +675,13 @@ service netd /system/bin/netd
 
 service debuggerd /system/bin/debuggerd
     class main
-    writepid /dev/cpuset/system-background/tasks
 
 service debuggerd64 /system/bin/debuggerd64
     class main
-    writepid /dev/cpuset/system-background/tasks
 
 service ril-daemon /system/bin/rild
     class main
     socket rild stream 660 root radio
-    socket sap_uim_socket1 stream 660 bluetooth bluetooth
     socket rild-debug stream 660 radio system
     user root
     group radio cache inet misc audio log qcom_diag
@@ -800,23 +711,25 @@ service defaultcrypto /system/bin/vdc --wait cryptfs mountdefaultencrypted
     # encryption) or trigger_restart_min_framework (other encryption)
 
 # One shot invocation to encrypt unencrypted volumes
-service encrypt /system/bin/vdc --wait cryptfs enablecrypto inplace default noui
+service encrypt /system/bin/vdc --wait cryptfs enablecrypto inplace default
+    disabled
+    oneshot
+    # vold will set vold.decrypt to trigger_restart_framework (default
+    # encryption)
+service myreencrypto /system/bin/vdc --wait cryptfs myencrypto inplace default
     disabled
     oneshot
     # vold will set vold.decrypt to trigger_restart_framework (default
     # encryption)
 
+#[lenovo_fw,zhaoll8,boot&shutdown_others], "Refer to lenovo_fw.txt" , modify
 service bootanim /system/bin/bootanimation
-    class core
-    user graphics
-    group graphics audio
+    class main
+    user root
+    group graphics
     disabled
     oneshot
-    writepid /dev/cpuset/system-background/tasks
-
-service gatekeeperd /system/bin/gatekeeperd /data/misc/gatekeeper
-    class late_start
-    user system
+#[lenovo_fw,zhaoll8,boot&shutdown_others], end
 
 service installd /system/bin/installd
     class main
@@ -824,12 +737,8 @@ service installd /system/bin/installd
 
 service flash_recovery /system/bin/install-recovery.sh
     class main
+    seclabel u:r:install_recovery:s0
     oneshot
-    disabled
-
-# update recovery if enabled
-on property:persist.sys.recovery_update=true
-    start flash_recovery
 
 service racoon /system/bin/racoon
     class main
@@ -866,33 +775,72 @@ service mdnsd /system/bin/mdnsd
     disabled
     oneshot
 
-service uncrypt /system/bin/uncrypt
+#add for aplog service
+service tcplog /system/xbin/tcpdump -s 1500 -w /local/log/aplog/tcp -C 1 -W 6 -Z root -i any host not 192.168.100.2 and host not 127.0.0.1
     class main
     disabled
     oneshot
 
-service pre-recovery /system/bin/uncrypt --reboot
+service mainlog /system/bin/logcat -r2048 -n 8 -v threadtime -f /local/log/aplog/logcat
+    class main
+    user system
+    group system root log
+    disabled
+    oneshot
+
+service mainlog_adv /system/bin/logcat -r10240 -n 99 -v threadtime -f /local/log/aplog/logcat_v
+    class main
+    user system
+    group system root log
+    disabled
+    oneshot
+
+service radiolog /system/bin/logcat -r2048 -b radio -n 8 -v time -f /local/log/aplog/radio "AT:S *:V"
+    class main
+    user system
+    group system root log
+    disabled
+    oneshot
+
+service dmesglog /system/bin/dmesglog.sh
     class main
     disabled
     oneshot
 
-service perfprofd /system/xbin/perfprofd
+service custom-setup /system/bin/init.lenovo.sh
     class late_start
+#    class main
+    oneshot
+
+service copyaplog /system/bin/sh /system/bin/copy_aplog.sh
+    class main
+    disabled
+    oneshot
+
+service factoryreset /system/bin/sh /system/bin/factory_reset.sh
+    class main
+    disabled
+    oneshot
+
+service factoryreset_tm /sbin/testmode factoryreset
+    class main
+    disabled
+    oneshot
+
+service pre-recovery /system/bin/uncrypt
+    class main
+    disabled
+    oneshot
+    
+#[lenovo_fw,hurui1],add    
+#Lenovo-sw chencheng6 for iwpriv command add 2015-04-27 begin
+on property:sys.iwpriv.action=1
+    start iwpriv
+    
+service iwpriv /system/bin/iwpriv_cmd
     user root
-    oneshot
-    writepid /dev/cpuset/system-background/tasks
-
-on property:persist.logd.logpersistd=logcatd
-    # all exec/services are called with umask(077), so no gain beyond 0700
-    mkdir /data/misc/logd 0700 logd log
-    # logd for write to /data/misc/logd, log group for read from pstore (-L)
-    exec - logd log -- /system/bin/logcat -L -b all -v threadtime -v usec -v printable -D -f /data/misc/logd/logcat -r 1024 -n 256
-    start logcatd
-
-service logcatd /system/bin/logcat -b all -v threadtime -v usec -v printable -D -f /data/misc/logd/logcat -r 1024 -n 256
-    class late_start
     disabled
-    # logd for write to /data/misc/logd, log group for read from log daemon
-    user logd
-    group log
-    writepid /dev/cpuset/system-background/tasks
+    oneshot
+#Lenovo-sw chencheng6 for iwpriv command add 2015-04-27 end
+#[lenovo_fw,hurui1],end
+

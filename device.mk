@@ -31,13 +31,16 @@ $(call inherit-product, frameworks/native/build/phone-hdpi-2048-dalvik-heap.mk)
 $(call inherit-product, frameworks/native/build/phone-xxhdpi-2048-hwui-memory.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
 
+# USB
+PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
+    persist.sys.usb.config=mtp,adb
+
 PRODUCT_CHARACTERISTICS := nosdcard
 
 # Audio
 PRODUCT_PACKAGES += \
     audiod \
     audio.a2dp.default \
-    audio.primary.msm8916 \
     audio.r_submix.default \
     audio.usb.default \
     libaudio-resampler \
@@ -69,24 +72,18 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/audio/acdb/QRD/QRD_Hdmi_cal.acdb:system/etc/acdbdata/QRD/QRD_Hdmi_cal.acdb \
     $(LOCAL_PATH)/audio/acdb/QRD/QRD_Headset_cal.acdb:system/etc/acdbdata/QRD/QRD_Headset_cal.acdb \
     $(LOCAL_PATH)/audio/acdb/QRD/QRD_Speaker_cal.acdb:system/etc/acdbdata/QRD/QRD_Speaker_cal.acdb \
-    $(LOCAL_PATH)/audio/acdb/QRD/msm8939-snd-card-skul/QRD_SKUL_Speaker_cal.acdb:system/etc/acdbdata/QRD/msm8939-snd-card-skul/QRD_SKUL_Speaker_cal.acdb \
-    $(LOCAL_PATH)/audio/acdb/QRD/msm8939-snd-card-skul/QRD_SKUL_Headset_cal.acdb:system/etc/acdbdata/QRD/msm8939-snd-card-skul/QRD_SKUL_Headset_cal.acdb \
-    $(LOCAL_PATH)/audio/acdb/QRD/msm8939-snd-card-skul/QRD_SKUL_Hdmi_cal.acdb:system/etc/acdbdata/QRD/msm8939-snd-card-skul/QRD_SKUL_Hdmi_cal.acdb \
-    $(LOCAL_PATH)/audio/acdb/QRD/msm8939-snd-card-skul/QRD_SKUL_Handset_cal.acdb:system/etc/acdbdata/QRD/msm8939-snd-card-skul/QRD_SKUL_Handset_cal.acdb \
-    $(LOCAL_PATH)/audio/acdb/QRD/msm8939-snd-card-skul/QRD_SKUL_Global_cal.acdb:system/etc/acdbdata/QRD/msm8939-snd-card-skul/QRD_SKUL_Global_cal.acdb \
-    $(LOCAL_PATH)/audio/acdb/QRD/msm8939-snd-card-skul/QRD_SKUL_General_cal.acdb:system/etc/acdbdata/QRD/msm8939-snd-card-skul/QRD_SKUL_General_cal.acdb \
-    $(LOCAL_PATH)/audio/acdb/QRD/msm8939-snd-card-skul/QRD_SKUL_Bluetooth_cal.acdb:system/etc/acdbdata/QRD/msm8939-snd-card-skul/QRD_SKUL_Bluetooth_cal.acdb \
     $(LOCAL_PATH)/audio/audio_policy.conf:system/etc/audio_policy.conf \
     $(LOCAL_PATH)/audio/mixer_paths_mtp.xml:system/etc/mixer_paths_mtp.xml \
+    $(LOCAL_PATH)/audio/mixer_paths.xml:system/etc/mixer_paths.xml \
+    $(LOCAL_PATH)/audio/mixer_paths_qrd_skuh.xml:system/etc/mixer_paths_qrd_skuh.xml \
+    $(LOCAL_PATH)/audio/mixer_paths_qrd_skuhf.xml:system/etc/mixer_paths_qrd_skuhf.xml \
+    $(LOCAL_PATH)/audio/mixer_paths_qrd_skui.xml:system/etc/mixer_paths_qrd_skui.xml \
+    $(LOCAL_PATH)/audio/mixer_paths_skuk.xml:system/etc/mixer_paths_skuk.xml \
+    $(LOCAL_PATH)/audio/mixer_paths_wcd9306.xml:system/etc/mixer_paths_wcd9306.xml \
+    $(LOCAL_PATH)/audio/sound_trigger_mixer_paths_wcd9306.xml:system/etc/sound_trigger_mixer_paths_wcd9306.xml \
+    $(LOCAL_PATH)/audio/sound_trigger_mixer_paths.xml:system/etc/sound_trigger_mixer_paths.xml \
     $(LOCAL_PATH)/audio/audio_effects.conf:system/vendor/etc/audio_effects.conf
 
-# not use ,,try it 
-#    $(LOCAL_PATH)/audio/mixer_paths.xml:system/etc/mixer_paths.xml \
-#    $(LOCAL_PATH)/audio/mixer_paths_qrd_skuh.xml:system/etc/mixer_paths_qrd_skuh.xml \
-#    $(LOCAL_PATH)/audio/mixer_paths_qrd_skuhf.xml:system/etc/mixer_paths_qrd_skuhf.xml \
-#    $(LOCAL_PATH)/audio/mixer_paths_qrd_skui.xml:system/etc/mixer_paths_qrd_skui.xml \
-#    $(LOCAL_PATH)/audio/mixer_paths_skuk.xml:system/etc/mixer_paths_skuk.xml \
-#    $(LOCAL_PATH)/audio/mixer_paths_wcd9306.xml:system/etc/mixer_paths_wcd9306.xml \
 
 
 
@@ -108,6 +105,7 @@ PRODUCT_PACKAGES += \
     ueventd.qcom.rc \
     init.lenovo.rc \
     init.qcom.factory.rc \
+    init.qcom.factory.sh \
     init.testmode.rc \
     init.carrier.rc \
     init.rc \
@@ -118,9 +116,10 @@ PRODUCT_PACKAGES += \
 
 # QCOM Config Script in propfiles
 
-# Media profile ooo
+# Media profile
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/media_codecs.xml:system/etc/media_codecs.xml \
+    $(LOCAL_PATH)/configs/media_codecs_8929.xml:system/etc/media_codecs_8929.xml \
     $(LOCAL_PATH)/configs/media_codecs_8939.xml:system/etc/media_codecs_8939.xml \
     $(LOCAL_PATH)/configs/media_profiles.xml:system/etc/media_profiles.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:system/etc/media_codecs_google_audio.xml \
@@ -132,23 +131,20 @@ PRODUCT_PACKAGES += \
     libc2dcolorconvert \
     libdivxdrmdecrypt \
     libdashplayer \
-    libextmedia_jni \
     libOmxAacEnc \
     libOmxAmrEnc \
     libOmxCore \
     libOmxEvrcEnc \
     libOmxQcelp13Enc \
     libOmxVdec \
+    libOmxVdecHevc \
     libOmxVenc \
-    libOmxVidcCommon \
-    libstagefrighthw
+    libstagefrighthw \
+    qcmediaplayer
 
 PRODUCT_BOOT_JARS += qcmediaplayer
 
-# Charger --add charger 
-#PRODUCT_PACKAGES += \
-#    charger \
-#    charger_res_images
+# Charger
 PRODUCT_PACKAGES += \
     charger_res_images
 
@@ -160,10 +156,10 @@ PRODUCT_PACKAGES += \
 #    regdbdump
 
 
-PRODUCT_PACKAGES += \
-    crda \
-    linville.key.pub.pem \
-    regdbdump
+#PRODUCT_PACKAGES += \
+#    crda \
+#    linville.key.pub.pem \
+#    regdbdump
 
 
 
@@ -175,22 +171,24 @@ PRODUCT_PACKAGES += \
     libtinyxml \
     memtrack.msm8916
 
-# Doze mode  --not use  try
-#PRODUCT_PACKAGES += \
-#    LenovoDoze
-
-
 # Filesystem
 PRODUCT_PACKAGES += \
     e2fsck \
     make_ext4fs \
     setup_fs
 
-# Keystore  ---in lib not vendor 
+# FM
+PRODUCT_PACKAGES += \
+    FM2 \
+    FMRecord \
+    libqcomfm_jni \
+    qcom.fmradio
+
+# Keystore
 PRODUCT_PACKAGES += \
     keystore.msm8916
 
-# Power HAL  ---use cm,  try
+# Power HAL
 PRODUCT_PACKAGES += \
     power.msm8916
 
@@ -198,7 +196,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     libxml2
 
-# GPS  --use vendor file
+# GPS
 #PRODUCT_PACKAGES += \
 #    gps.msm8916
 
@@ -236,23 +234,23 @@ PRODUCT_PROPERTY_OVERRIDES += \
 #PRODUCT_PACKAGES += \
 #    lights.msm8916
 
-# Keylayout  ---use vendor kl
+# Keylayout
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/keylayout/synaptics_rmi4_i2c.kl:system/usr/keylayout/synaptics_rmi4_i2c.kl \
     $(LOCAL_PATH)/keylayout/synaptics_dsx.kl:system/usr/keylayout/synaptics_dsx.kl \
     $(LOCAL_PATH)/keylayout/gpio-keys.kl:system/usr/keylayout/gpio-keys.kl \
-    $(LOCAL_PATH)/keylayout/goodix_ts.kl:system/usr/keylayout/goodix_ts.kl \
     $(LOCAL_PATH)/keylayout/ft5x06_ts.kl:system/usr/keylayout/ft5x06_ts.kl
 
-# USB  ---not sure
-PRODUCT_PACKAGES += \
-    com.android.future.usb.accessory
+# USB  ---not sure, no use try
+#PRODUCT_PACKAGES += \
+#    com.android.future.usb.accessory
 
 # WiFi
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/wifi/WCNSS_cfg.dat:system/etc/firmware/wlan/prima/WCNSS_cfg.dat \
-    $(LOCAL_PATH)/wifi/WCNSS_qcom_cfg.ini:system/etc/wifi/WCNSS_qcom_cfg.ini \
-    $(LOCAL_PATH)/wifi/WCNSS_qcom_wlan_nv.bin:system/etc/firmware/wlan/prima/WCNSS_qcom_wlan_nv.bin
+    $(LOCAL_PATH)/wifi/WCNSS_qcom_cfg.ini:system/etc/wifi/WCNSS_qcom_cfg.ini
+
+#    $(LOCAL_PATH)/wifi/WCNSS_qcom_wlan_nv.bin:system/etc/firmware/wlan/prima/WCNSS_qcom_wlan_nv.bin
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/wifi/hostapd.accept:system/etc/hostapd/hostapd.accept \
@@ -271,7 +269,7 @@ PRODUCT_PACKAGES += \
     wpa_supplicant \
     wcnss_service
 
-# Data configuration files ---use vendor file
+# Data configuration files
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/data/dsi_config.xml:system/etc/data/dsi_config.xml \
     $(LOCAL_PATH)/configs/data/netmgr_config.xml:system/etc/data/netmgr_config.xml \
@@ -316,12 +314,8 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.telephony.cdma.xml:system/etc/permissions/android.hardware.telephony.cdma.xml \
     frameworks/native/data/etc/android.hardware.bluetooth.xml:system/etc/permissions/android.hardware.bluetooth.xml \
     frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml \
-    frameworks/native/data/etc/android.software.print.xml:system/etc/permissions/android.software.print.xml \
-    frameworks/native/data/etc/android.software.midi.xml:system/etc/permissions/android.software.midi.xml
+    frameworks/native/data/etc/android.software.print.xml:system/etc/permissions/android.software.print.xml
 
-# Thermal config ---no vendor ,try it other if naccery
-#PRODUCT_COPY_FILES += \
-#    (LOCAL_PATH)/configs/thermal-engine-8939.conf:system/etc/thermal-engine-8939.conf
 
 # Proprietery Firmware in proprietary files
 #PRODUCT_COPY_FILES += \
@@ -343,9 +337,9 @@ ADDITIONAL_DEFAULT_PROPERTIES += \
     ro.adb.secure=0 \
     camera2.portability.force_api=1
 
-# Connectivity Engine support  ---use vendor
-#PRODUCT_PACKAGES += \
-#    libcnefeatureconfig
+# Connectivity Engine support
+PRODUCT_PACKAGES += \
+    libcnefeatureconfig
 
 ifeq ($(BOARD_USES_QCNE),true)
 PRODUCT_PACKAGES += \
@@ -361,29 +355,4 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.service.debuggable=1 \
     ro.debuggable=1 \
     persist.sys.usb.config=mtp,adb
-
-
-
-# copy APP  ---not use
-#PRODUCT_COPY_FILES += \
-#    $(LOCAL_PATH)/app/qcrilmsgtunnel/qcrilmsgtunnel.apk:system/app/qcrilmsgtunnel/qcrilmsgtunnel.apk \
-#    $(LOCAL_PATH)/app/LenovoBrowser/LenovoBrowser.apk:system/priv-app/LenovoBrowser/LenovoBrowser.apk \
-#    $(LOCAL_PATH)/app/AGPSTestMode/AGPSTestMode.apk:system/app/AGPSTestMode/AGPSTestMode.apk
-
-
-# copy framework ---not use
-#PRODUCT_COPY_FILES += \
-#    $(LOCAL_PATH)/framework/qcrilhook.jar:system/framework/qcrilhook.jar \
-#    $(LOCAL_PATH)/framework/qcmediaplayer.jar:system/framework/qcmediaplayer.jar \
-#    $(LOCAL_PATH)/framework/qcnvitems.jar:system/framework/qcnvitems.jar \
-#    $(LOCAL_PATH)/framework/qcnvitems.jar:system/framework/tcmclient.jar \
-#    $(LOCAL_PATH)/framework/qcom.fmradio.jar:system/framework/qcom.fmradio.jar
-
-
-
-
-
-
-
-
 

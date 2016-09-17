@@ -213,13 +213,3 @@ case "$target" in
         init_DMM
         ;;
 esac
-# modify by chezhaohui,2015-12-9 begin	
-# Make modem config folder and copy firmware config to that folder	
-#
-if [ ! -d /data/misc/radio/modem_config ];then
-    mkdir -p /data/misc/radio/modem_config
-fi
-#cp -r /firmware/image/modem_pr/mbn_ota /data/misc/radio/modem_config
-cp -rf /system/etc/firmware/mcfg_* /data/misc/radio/modem_config
-chown -hR radio.radio /data/misc/radio/modem_config
-#modify by chezhaohui,2015-12-9 end

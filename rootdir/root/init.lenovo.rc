@@ -1,5 +1,10 @@
 on post-fs
-    chown system system /sys/devices/soc.0/gpio_keys.69/camera_key
+
+# load nfc module
+#service nxp_load_module /system/bin/sh /system/etc/init.nxp.nfc.sh
+#    class core
+#    user root
+#    oneshot
 
 service wlanmode_insmod /system/bin/insmod /system/lib/modules/wlan.ko con_mode=5
     class main
@@ -21,7 +26,7 @@ service wlanmode_close /system/bin/ifconfig wlan0 down
     disabled
     oneshot
 
-service wlan_report /system/bin/sh /data/misc/wifitest/wlantest_report.sh
+service wlan_report /system/bin/sh /data/wlantest_report.sh
     class late_start
     user root
     disabled
@@ -42,26 +47,14 @@ on property:wlan.test.open=0
 on property:wlan.test.report=1
     start wlan_report
 
-# [lenovo_fw,hurui1,framewowrk_root_channel],copy the cert add
-on property:sys.boot_completed=1
-    mkdir /data/wapi_certificate 0771 system system
-    retorecon /data/wapi_certificate
+#service nfc_report /system/bin/sh /data/nfctest_report.sh
+#    class late_start
+#    user root
+#    disabled
+#    oneshot
 
-service jcommand /system/bin/sh /system/bin/jcommand.sh
-	class main
-	disabled
-	oneshot
-# [lenovo_fw,hurui1,frameowrk_root_channel],end
-
-#Lenovo-sw chencheng6 for iwpriv command add 2015-04-27 begin-----------not sure for drop
-on property:sys.iwpriv.action=1
-    start iwpriv
-
-service iwpriv /system/bin/iwpriv_cmd
-    user root
-    disabled
-    oneshot
-#Lenovo-sw chencheng6 for iwpriv command add 2015-04-27 end
+#on property:wlan.test.nfc=1
+#    start nfc_report
 
 #for engineermode bt test
 #service bt_duttest_on /system/xbin/bttool duton
@@ -78,29 +71,73 @@ service iwpriv /system/bin/iwpriv_cmd
 #    disabled
 #    oneshot
 
+
+#add by yuanhh1@lenovo.com
+service system_analyser /system/bin/sh /data/system_analyser.sh
+    class main
+    user  root
+    disabled
+
+on property:sys.testmode.analyser=1
+    mkdir /data/local/tmp/dalvik-cache 0755 system system
+#    start system_analyser
+
+
+# add by liuxu7@lenovo.com
+service jcommand /system/bin/sh /system/bin/jcommand.sh
+class main
+disabled
+oneshot
+
 #on property:bluetooth.duttest=true
 #    start bt_duttest_on
 
 #on property:bluetooth.duttest=false
 #    start bt_duttest_off
 
-#for factory properties-----------not sure for drop
+
+#for EngineerTest.apk bt rf test
+#service bt_rf_test /system/bin/sh /system/etc/bt_rf_test.sh
+#    class late_start
+#    user root
+#    group root
+#    disabled
+#    oneshot
+
+#for factory properties
 #service wcg_mac_tool /system/bin/wcg_mac_tool
 #   class late_start
 #   user root
 #   disabled
 #   oneshot
 
+#[lenovo_fw,bibh1,root_channel] ,"Refer to lenovo_fw.txt", add
+#service nac_ue /system/bin/nac_ue
+#    class main
+#    user root
+
+service nac_server /system/bin/nac_server
+    class main
+    user root
+#seclabel u:r:nac_server:s0
+#[lenovo_fw,bibh1,root_channel] ,end
+
 #on property:sys.boot_completed=1
 #    start wcg_mac_tool
 
-#for EngineerTest.apk bt rf test
-#service bt_rf_test /system/bin/sh /system/etc/bt_rf_test.sh
-#    class late_start
-#    user root
-#    group bluetooth
-#    disabled
-#    oneshot
+on property:persist.sys.dloadmode.config=1
+    write /sys/module/msm_poweroff/parameters/emergent_restart 1
+    write /sys/module/msm_poweroff/parameters/download_mode 1
+    write /sys/bus/msm_subsys/devices/subsys0/restart_level system
+    write /sys/bus/msm_subsys/devices/subsys1/restart_level system
+    write /sys/bus/msm_subsys/devices/subsys2/restart_level system
+
+on property:persist.sys.dloadmode.config=0
+    write /sys/module/msm_poweroff/parameters/download_mode 0
+    write /sys/bus/msm_subsys/devices/subsys0/restart_level related
+    write /sys/bus/msm_subsys/devices/subsys1/restart_level related
+    write /sys/bus/msm_subsys/devices/subsys2/restart_level related
+
 
 #copy preload to data app
 service userinit_w /system/bin/sh /system/etc/userinit_w.sh

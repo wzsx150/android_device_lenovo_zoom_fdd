@@ -20,7 +20,7 @@
     <!-- Default state of auto brightness -->
     <bool name="def_screen_brightness_automatic_mode">true</bool>
     <!-- Default state of tap to wake -->
-    <bool name="def_double_tap_to_wake">true</bool>
+<!--     <bool name="def_double_tap_to_wake">true</bool>  -->
     <!-- Default screen brightness, from 0 to 255. 87 is 34%. -->
     <integer name="def_screen_brightness">87</integer>
     <!-- 300 seconds for default screen timeout -->

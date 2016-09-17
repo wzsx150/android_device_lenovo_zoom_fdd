@@ -1,6 +1,6 @@
 
-# CNE/DPM
-priv-app/CNEService/CNEService.apk
+# CNE/DPM  --do not have it
+#priv-app/CNEService/CNEService.apk
 
 
 
@@ -16,7 +16,7 @@ priv-app/qcrilmsgtunnel/qcrilmsgtunnel.apk
 app/shutdownlistener/shutdownlistener.apk
 framework/qcnvitems.jar
 framework/qcrilhook.jar
-vendor/lib64/libril-qc-qmi-1.so
+#vendor/lib64/libril-qc-qmi-1.so
 
 
 # Time services qcom

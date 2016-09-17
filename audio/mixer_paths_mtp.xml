@@ -50,7 +50,7 @@
     <ctl name="SPK DAC Switch" value="0" />
     <ctl name="Boost Option" value="BOOST_ON_FOREVER" />
     <ctl name="Speaker Boost" value="ENABLE" />
-    <ctl name="MICBIAS CAPLESS Switch" value="0" />
+    <ctl name="MICBIAS CAPLESS Switch" value="1" />
     <ctl name="EAR PA Gain" value="POS_1P5_DB" />
     <ctl name="EAR PA Boost" value="ENABLE" />
     <ctl name="MI2S_RX Channels" value="One" />
